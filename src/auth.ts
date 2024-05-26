@@ -49,6 +49,7 @@ export const config: NextAuthConfig = {
       return token;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
