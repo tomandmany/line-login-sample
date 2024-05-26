@@ -7,8 +7,8 @@ import LINEProvider from 'next-auth/providers/line';
 export const config: NextAuthConfig = {
   providers: [
     LINEProvider({
-      clientId: process.env.LINE_CLIENT_ID!,
-      clientSecret: process.env.LINE_CLIENT_SECRET!,
+      clientId: process.env.NEXT_PUBLIC_LINE_CLIENT_ID!,
+      clientSecret: process.env.NEXT_PUBLIC_LINE_CLIENT_SECRET!,
       authorization: {
         params: {
           scope: 'profile openid email',
