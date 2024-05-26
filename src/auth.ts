@@ -1,5 +1,6 @@
 // auth.ts
 
+import { url } from 'inspector';
 import NextAuth from 'next-auth';
 import { NextAuthConfig } from 'next-auth';
 import LINEProvider from 'next-auth/providers/line';
@@ -15,6 +16,7 @@ export const config: NextAuthConfig = {
           response_type: 'code',
           state: 'some_random_string', // ここで適切なstateを設定
         },
+        url: 'https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI&state=STATE&scope=profile%20openid%20email&nonce=NONCE',
       },
     }),
   ],
