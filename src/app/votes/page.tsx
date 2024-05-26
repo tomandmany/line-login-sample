@@ -1,16 +1,15 @@
 import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+import LogoutButton from '@/components/LogoutButton';
 
 export default async function page() {
     const session = await auth();
-    if (!session?.user) {
-        redirect("/login");
-    }
+
     const { user } = session!;
 
     return (
-        <main className="flex flex-col items-center justify-center min-h-screen py-2">
+        <main className="flex flex-col items-center justify-center min-h-screen py-2 gap-10">
             {user?.name}
+            <LogoutButton />
         </main>
     )
 }

@@ -1,55 +1,37 @@
-// auth.ts
-
 import NextAuth from 'next-auth';
-import { NextAuthConfig } from 'next-auth';
-import LINEProvider from 'next-auth/providers/line';
-import { generateCodeChallenge, generateCodeVerifier } from './utils/pkce';
-import { setCodeVerifierCookie } from './utils/cookies';
+import { authConfig } from './auth.config';
+import LineProvider from 'next-auth/providers/line';
 
-export const config: NextAuthConfig = {
+function generateState(length: number): string {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+export const {
+  auth,
+  signIn,
+  signOut,
+  handlers: { GET, POST },
+} = NextAuth({
+  ...authConfig,
   providers: [
-    LINEProvider({
+    LineProvider({
       clientId: process.env.LINE_CLIENT_ID!,
       clientSecret: process.env.LINE_CLIENT_SECRET!,
       authorization: {
         params: {
           scope: 'profile openid email',
           response_type: 'code',
-          state: 'some_random_string', // ここで適切なstateを設定
+          state: generateState(32),
         },
-        pkce: true, // PKCEを有効にする
       },
     }),
   ],
-  pages: {
-    signIn: '/login',
-  },
-  basePath: '/api/auth',
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      return true;
-    },
-    async redirect({ url, baseUrl }) {
-      // 認証後のリダイレクト先を設定
-      return baseUrl;
-    },
-    async session({ session, token }) {
-      session.user.id = token.sub!;
-      return session;
-    },
-    async jwt({ token, account }) {
-      if (account?.provider === 'line') {
-        const codeVerifier = generateCodeVerifier();
-        const codeChallenge = generateCodeChallenge(codeVerifier);
-        token.codeVerifier = codeVerifier;
-        token.codeChallenge = codeChallenge;
-        // Cookieにcode_verifierを保存します
-        // Cookieの設定はここに記述します
-      }
-      return token;
-    },
-  },
   secret: process.env.NEXTAUTH_SECRET,
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+});
