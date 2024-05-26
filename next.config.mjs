@@ -4,7 +4,7 @@ const nextConfig = {
         return [
             {
                 source: '/',
-                destination: '/votles',
+                destination: '/votes',
                 permanent: true,
             },
         ]
