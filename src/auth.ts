@@ -15,6 +15,7 @@ export const config: NextAuthConfig = {
           response_type: 'code',
           state: 'some_random_string', // ここで適切なstateを設定
         },
+        pkce: true, // PKCEを有効にする
       },
     }),
   ],
