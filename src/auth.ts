@@ -3,6 +3,8 @@
 import NextAuth from 'next-auth';
 import { NextAuthConfig } from 'next-auth';
 import LINEProvider from 'next-auth/providers/line';
+import { generateCodeChallenge, generateCodeVerifier } from './utils/pkce';
+import { setCodeVerifierCookie } from './utils/cookies';
 
 export const config: NextAuthConfig = {
   providers: [
@@ -19,6 +21,9 @@ export const config: NextAuthConfig = {
       },
     }),
   ],
+  pages: {
+    signIn: '/login',
+  },
   basePath: '/api/auth',
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -33,8 +38,13 @@ export const config: NextAuthConfig = {
       return session;
     },
     async jwt({ token, account }) {
-      if (account) {
-        token.accessToken = account.access_token;
+      if (account?.provider === 'line') {
+        const codeVerifier = generateCodeVerifier();
+        const codeChallenge = generateCodeChallenge(codeVerifier);
+        token.codeVerifier = codeVerifier;
+        token.codeChallenge = codeChallenge;
+        // Cookieにcode_verifierを保存します
+        // Cookieの設定はここに記述します
       }
       return token;
     },
